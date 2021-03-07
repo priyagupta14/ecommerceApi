@@ -21,7 +21,7 @@ const distinctFeat = async (req, res) => {
   if (validate.error) return res.status(400).json({ Error: 'invalid params' });
   try {
     const result = await inventoryService.distinctFeat(req.params.category);
-    res.status(202).json({ message: result });
+    res.status(200).json({ message: result });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
