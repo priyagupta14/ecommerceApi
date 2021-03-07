@@ -13,6 +13,12 @@ const storeCategoryItem = async (req, res) => {
     res.status(402).json({ ErrorMessage: error.name });
   }
 };
+
+const distinctFeat = async (req, res) => {
+  const result = await inventoryService.distinctFeat(req.params.category);
+  res.status(202).json(result);
+};
 module.exports = {
   storeCategoryItem,
+  distinctFeat,
 };
