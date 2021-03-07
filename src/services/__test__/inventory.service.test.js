@@ -2,7 +2,7 @@ const inventoryService = require('../inventory.service');
 const { Category, Item } = require('../../models');
 const httpUtils = require('../../utils/http.utils');
 
-describe(' Store Categories and Items in DB', () => {
+xdescribe(' Store Categories and Items in DB', () => {
   it('should store categories and items in tables', async () => {
     const mockCat = {
       name: 'shoes',
@@ -30,5 +30,31 @@ describe(' Store Categories and Items in DB', () => {
     const storedInDb = await inventoryService.storeCategoryItem('shoe');
     console.log(storedInDb);
     // expect(storedInDb).toBe(2);
+  });
+});
+
+describe('get distinct features based on category', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should return Invalid Category', async () => {
+    jest.spyOn(Category, 'findOne').mockResolvedValue(null);
+    const failCategory = await inventoryService.distinctFeat('abc');
+    expect(failCategory).toBe('No Such Category');
+  });
+  it('should return distinct features based on category', async () => {
+    const expectResult = {
+      features: {
+        size: ['Black'],
+        color: ['Black'],
+        brand: ['Black'],
+      },
+    };
+    jest.spyOn(Category, 'findOne').mockResolvedValue(true);
+    jest.spyOn(Item, 'findAll').mockResolvedValueOnce([{ size: 'Black' }]);
+    jest.spyOn(Item, 'findAll').mockResolvedValueOnce([{ color: 'Black' }]);
+    jest.spyOn(Item, 'findAll').mockResolvedValueOnce([{ brand: 'Black' }]);
+    const receivedResult = await inventoryService.distinctFeat('shoes');
+    expect(receivedResult).toEqual(expectResult);
   });
 });

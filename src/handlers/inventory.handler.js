@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const inventoryService = require('../services/inventory.service');
 
 const storeCategoryItem = async (req, res) => {
@@ -6,17 +7,24 @@ const storeCategoryItem = async (req, res) => {
       (category) => inventoryService.storeCategoryItem(category),
     );
     categoryArray = await Promise.all(categoryArray);
-    // const result = await inventoryService.storeCategoryItem(req.body.name);
-    console.log(666, categoryArray);
-    res.status(202).json(categoryArray);
+    res.status(201).json(categoryArray);
   } catch (error) {
-    res.status(402).json({ ErrorMessage: error.name });
+    res.status(404).json({ ErrorMessage: error.name });
   }
 };
 
 const distinctFeat = async (req, res) => {
-  const result = await inventoryService.distinctFeat(req.params.category);
-  res.status(202).json(result);
+  const schema = Joi.object().keys({
+    category: Joi.string().required(),
+  });
+  const validate = schema.validate(req.params);
+  if (validate.error) return res.status(400).json({ Error: 'invalid params' });
+  try {
+    const result = await inventoryService.distinctFeat(req.params.category);
+    res.status(202).json({ message: result });
+  } catch (error) {
+    res.status(400).json({ Error: error });
+  }
 };
 module.exports = {
   storeCategoryItem,
